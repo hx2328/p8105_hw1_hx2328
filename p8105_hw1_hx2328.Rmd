@@ -1,0 +1,110 @@
+---
+title: "p8105_hw1_hx2328"
+author: "Hao Xu"
+date: "2021/9/29"
+output: github_document
+---
+
+# Problem 1
+
+The creation of data frame:
+
+```{r create_dataframe, message = FALSE}
+library(tidyverse)
+
+ex_dataframe = tibble(
+  random_sample = rnorm(10),
+  logical_vec = random_sample > 0,
+  char_vec = c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+  factor_vec = factor(c("study", "eat", "play", "play", "study", "eat", "eat",
+                        "play", "play", "study"), 
+                      levels = c("study", "eat", "play"))
+)
+```
+
+The data frame is shown here:
+
+```{r}
+ex_dataframe
+```
+
+The next step is to try to take mean of each variable:
+
+* The mean of the random sample:
+
+```{r mean1}
+mean1 = mean(pull(ex_dataframe, 1))
+```
+
+The mean is `r mean1`
+
+* The mean of logical vector:
+```{r mean2}
+mean2 = mean(pull(ex_dataframe, 2))
+```
+
+The mean is `r mean2`
+
+* The mean of character variable:
+
+```{r mean3}
+mean3 = mean(pull(ex_dataframe, 3))
+```
+
+This time I got a warning message, the variable is not numeric or logical, so R cannot take its mean.
+
+* The mean of factor variable:
+
+```{r mean4}
+mean4 = mean(pull(ex_dataframe, 4))
+```
+
+This time is the same warning. R cannot take the mean of this variable, and it returns NA.
+
+Then, here is the code chunk as I convert the variables:
+
+```{r convert_variables, eval = FALSE}
+conv_logical = as.numeric(pull(ex_dataframe, 2))
+conv_char = as.numeric(pull(ex_dataframe, 3))
+conv_factor = as.numeric(pull(ex_dataframe, 4))
+
+conv_logical
+conv_char
+conv_factor
+```
+
+This time, the logical variable is converted to number 1 for "TRUE", and number 0 for "FALSE". The character variable is still failed to be converted, and all of them are NA. The factor variales are converted to number 1, 2, or 3 according to their different factor level.
+
+
+# Problem 2
+
+The process to load the "penguins" dataset:
+
+```{r load_penguins}
+data("penguins", package = "palmerpenguins")
+```
+
+## Short description of dataset
+
+* The column names of the dataset are: `r colnames(penguins)`
+
+The first column of the dataset is `r colnames(penguins)[1]`, it contains: `r levels(penguins$species)`.
+
+The second column is the `r colnames(penguins)[2]`, it contains: `r levels(penguins$island)`.
+
+The seventh column is `r colnames(penguins)[7]`, it contains: `r levels(penguins$sex)`
+
+The remaining columns are all numerical values describing the attributes of the penguins.
+
+* The dataset has `r nrow(penguins)` rows and `r ncol(penguins)` columns.
+
+* The mean of the flipper length of those penguins, after removing all NAs, is `r mean(penguins$flipper_length_mm, na.rm = T)` in mm.
+
+## Scatterplot of this dataset
+
+```{r scatterplot_penguins, warning = FALSE}
+ggplot(penguins, aes(x = bill_length_mm, y = flipper_length_mm, color = species)) + geom_point()
+
+ggsave("scatter_plot.pdf", height = 4, width = 6)
+```
+
